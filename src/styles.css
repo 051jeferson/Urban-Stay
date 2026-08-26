@@ -1,0 +1,379 @@
+/* ------------------------------------------------------------------
+   Urban Stay® — design tokens straight from the Figma library
+   ------------------------------------------------------------------ */
+:root {
+  /* Cores nomeadas no arquivo */
+  --noite-urbana: #020608;
+  --areia-clara: #f8f4e2;
+
+  /* Escala do art-board. 1 = viewport de 1440px (1:1 com o Figma). */
+  --k: 1;
+
+  /* Escala do bloco de beneficios: --k encolhido se a janela for baixa */
+  --kb: 1;
+
+  /* Meia largura do art-board visivel, em px */
+  --frame-half: 720px;
+
+  /* Sobra lateral quando a janela passa de 1440: (vw - 1440) / 2.
+     Alinha o texto em fluxo a margem do art-board; nada e recortado. */
+  --side-clip: 0px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: clip;
+  background: var(--areia-clara);
+  color: var(--noite-urbana);
+}
+
+body {
+  font-family: "Clash Grotesk", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 400;
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--noite-urbana);
+  color: var(--areia-clara);
+}
+
+/* ------------------------------------------------------------------
+   Fundo — o gradiente e uma unica camada fixa, como nos tres frames
+   ------------------------------------------------------------------ */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-color: var(--areia-clara);
+  background-image: url("/img/bg-gradient.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------
+   Navbar — encostada nas margens do art-board: 32 do topo, 32 dos lados,
+   sem padding proprio. Em vez de ganhar um fundo quando as fotos passam
+   por tras, o tipo inverte o que estiver embaixo (`difference`).
+
+   Duas camadas na mesma grade: `.nav` mesclada (logo + links) e
+   `.nav-cta` normal (o botao). `mix-blend-mode` so alcanca o fundo da
+   pagina se estiver no elemento de topo — qualquer stacking context no
+   caminho isola o grupo e a mesclagem morre.
+   ------------------------------------------------------------------ */
+.nav,
+.nav-cta {
+  position: fixed;
+  top: calc(32px * var(--k));
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(var(--frame-half) * 2 - 64px * var(--k));
+  display: flex;
+  align-items: center;
+  gap: calc(24px * var(--k));
+}
+
+.nav {
+  justify-content: space-between;
+  z-index: 40;
+  /* tudo aqui dentro e branco puro: a mesclagem devolve o negativo do fundo */
+  color: #fff;
+  mix-blend-mode: difference;
+}
+
+.nav-cta {
+  justify-content: flex-end;
+  z-index: 41;
+  pointer-events: none;
+}
+
+.nav-cta .btn {
+  pointer-events: auto;
+}
+
+/* Reserva a largura exata do botao na camada mesclada. */
+.nav__ghost {
+  visibility: hidden;
+}
+
+.nav__logo {
+  width: calc(202.251px * var(--k));
+  height: calc(20.221px * var(--k));
+  flex: 0 0 auto;
+}
+
+.nav__logo img {
+  width: 100%;
+  height: 100%;
+  /* o SVG do arquivo e preto; invertido, entra branco na mesclagem */
+  filter: invert(1);
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: calc(64px * var(--k));
+  white-space: nowrap;
+}
+
+.nav__links a {
+  font-size: calc(14px * var(--k));
+  line-height: 1.4;
+  letter-spacing: calc(0.14px * var(--k));
+  opacity: 0.8;
+  transition: opacity 0.35s var(--ease-out);
+}
+
+.nav__links a:hover {
+  opacity: 1;
+}
+
+/* Botao preto — px 22 / py 14 / radius 4 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(14px * var(--k)) calc(22px * var(--k));
+  border-radius: calc(4px * var(--k));
+  font-size: calc(14px * var(--k));
+  line-height: 1.4;
+  letter-spacing: calc(0.14px * var(--k));
+  white-space: nowrap;
+  transition: transform 0.4s var(--ease-out), background-color 0.4s var(--ease-out),
+    color 0.4s var(--ease-out);
+}
+
+.btn--solid {
+  background: var(--noite-urbana);
+  color: var(--areia-clara);
+}
+
+
+
+.btn--solid:hover {
+  transform: translateY(calc(-2px * var(--k)));
+}
+
+.btn--ghost {
+  color: var(--noite-urbana);
+}
+
+.btn--ghost:hover {
+  background: rgba(2, 6, 8, 0.06);
+}
+
+/* ------------------------------------------------------------------
+   Palco fixo: roda de imagens + headline
+   ------------------------------------------------------------------ */
+.stage-track {
+  position: relative;
+  /* fica acima da secao seguinte: a linha de fotos transborda o palco
+     e precisa continuar visivel quando o sticky e liberado */
+  z-index: 2;
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  /* Sem recorte: a grade fica ancorada no frame de 1440, mas as fotos podem
+     sangrar ate a borda da janela. Quem corta e o `overflow-x` do body. */
+}
+
+/* Cada card e posicionado pelo seu centro e transformado via JS */
+.card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(344.524px * var(--k));
+  height: calc(496.611px * var(--k));
+  margin-left: calc(-172.262px * var(--k));
+  margin-top: calc(-248.3055px * var(--k));
+  border-radius: calc(6px * var(--k));
+  overflow: hidden;
+  will-change: transform, opacity;
+  transform-origin: 50% 50%;
+  backface-visibility: hidden;
+}
+
+.card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform;
+  transform-origin: 50% 50%;
+}
+
+/* Bloco de headline do hero — width 784.209, gap 48 */
+.hero {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(784.209px * var(--k));
+  transform: translate3d(-50%, -50%, 0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(48px * var(--k));
+  text-align: center;
+  z-index: 20;
+  will-change: transform, opacity, filter;
+}
+
+.hero__copy {
+  display: flex;
+  flex-direction: column;
+  gap: calc(32px * var(--k));
+  width: 100%;
+}
+
+.hero__title {
+  margin: 0;
+  font-weight: 500;
+  font-size: calc(80px * var(--k));
+  line-height: 0.9;
+  letter-spacing: calc(-2.4px * var(--k));
+  text-transform: uppercase;
+}
+
+.hero__lead {
+  margin: 0;
+  font-size: calc(18px * var(--k));
+  line-height: 1.4;
+  letter-spacing: calc(0.18px * var(--k));
+  opacity: 0.8;
+}
+
+.hero__actions {
+  display: flex;
+  gap: calc(8px * var(--k));
+}
+
+/* ------------------------------------------------------------------
+   Frame 9068:919 — os textos ficam ancorados na margem esquerda do
+   art-board, 64 abaixo do card grande. Um bloco por card, todos
+   empilhados no mesmo ponto: quem esta na margem aparece, o resto
+   espera fora da mascara.
+   ------------------------------------------------------------------ */
+.benefits {
+  position: absolute;
+  top: calc(759.845px * var(--kb));
+  left: calc(50% - var(--frame-half) + 32px * var(--kb));
+  width: calc(948px * var(--kb));
+  z-index: 15;
+}
+
+.benefit {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: calc(20px * var(--kb));
+}
+
+.benefits__title {
+  margin: 0;
+  font-weight: 500;
+  font-size: calc(80px * var(--kb));
+  line-height: 0.9;
+  letter-spacing: calc(-2.4px * var(--kb));
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.benefits__lead {
+  margin: 0;
+  font-size: calc(24px * var(--kb));
+  line-height: 1.4;
+  letter-spacing: calc(0.24px * var(--kb));
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+/* linhas do texto sobem em cascata */
+.reveal-line {
+  display: block;
+  overflow: hidden;
+  /* line-height 0.9 corta acentos e pontuacao; a folga volta pela margem */
+  padding: 0.12em 0;
+  margin: -0.12em 0;
+}
+
+.reveal-line > span {
+  display: block;
+  will-change: transform;
+  transform: translateY(130%);
+}
+
+/* ------------------------------------------------------------------
+   Rodape simples para dar fim ao scroll
+   ------------------------------------------------------------------ */
+.outro {
+  position: relative;
+  z-index: 1;
+  padding: calc(120px * var(--k)) calc(var(--side-clip) + 32px * var(--k))
+    calc(64px * var(--k));
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: calc(32px * var(--k));
+  font-size: calc(14px * var(--k));
+  letter-spacing: calc(0.14px * var(--k));
+  opacity: 0.7;
+}
+
+/* ------------------------------------------------------------------
+   Mobile — o art-board de 1440 vira um recorte de 820
+   ------------------------------------------------------------------ */
+@media (max-width: 1023px) {
+  .nav__links {
+    display: none;
+  }
+
+  .nav {
+    max-width: calc(100vw - 24px);
+  }
+
+  .outro {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
