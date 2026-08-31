@@ -12,6 +12,10 @@
   /* Escala do bloco de beneficios: --k encolhido se a janela for baixa */
   --kb: 1;
 
+  /* Escala dos frames de 1440 cheios (9111:4 e 9111:2336):
+     --k, ou a janela inteira abaixo de 1024 */
+  --km: 1;
+
   /* Meia largura do art-board visivel, em px */
   --frame-half: 720px;
 
@@ -149,6 +153,11 @@ a {
   align-items: center;
   gap: calc(64px * var(--k));
   white-space: nowrap;
+}
+
+/* wrapper de entrada: carrega a animacao para o <a> manter opacidade e hover */
+.nav__link {
+  display: inline-flex;
 }
 
 .nav__links a {
@@ -327,10 +336,24 @@ a {
   white-space: nowrap;
 }
 
+/* Palavra do titulo do hero — so um inline-block para o transform pegar.
+   Sem `overflow: hidden`: recortar um inline-block move a baseline dele
+   para a borda inferior e o titulo sairia do lugar. Quem move o <span> de
+   dentro e o Framer Motion, e so no carregamento. */
+.hero__title .reveal-word > span {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
 /* linhas do texto sobem em cascata */
 .reveal-line {
   display: block;
-  overflow: hidden;
+  /* A mascara so precisa recortar em cima e embaixo — e por onde o texto
+     entra e sai. `overflow: hidden` recortava nos quatro lados e comia o
+     ponto final da linha mais longa: "Café sem hora marcada." mede 957px
+     numa caixa de 948. O `inset` negativo solta a horizontal e mantem o
+     corte vertical, sem depender de folga chutada. */
+  clip-path: inset(0 -100% 0 -100%);
   /* line-height 0.9 corta acentos e pontuacao; a folga volta pela margem */
   padding: 0.12em 0;
   margin: -0.12em 0;
@@ -342,13 +365,321 @@ a {
   transform: translateY(130%);
 }
 
+/* Palavra do titulo dos beneficios. Mesmo recorte vertical da .reveal-line
+   — e so possivel por causa dele: `overflow: hidden` num inline-block move
+   a baseline para a borda inferior da caixa (regra do CSS) e o titulo sairia
+   do lugar; `clip-path` nao mexe na baseline. A folga do padding cancela na
+   margem, entao a palavra assenta exatamente onde assentaria sem mascara. */
+.benefits__title .reveal-word {
+  display: inline-block;
+  clip-path: inset(0 -100% 0 -100%);
+  padding: 0.12em 0;
+  margin: -0.12em 0;
+}
+
+.benefits__title .reveal-word > span {
+  display: inline-block;
+  will-change: transform;
+  transform: translateY(130%);
+}
+
+/* ------------------------------------------------------------------
+   Frame 9111:4 — "A parte da viagem que ninguém lembra de contar"
+   Art-board de 1440 x 1607.
+   ------------------------------------------------------------------ */
+/* Sem fundo proprio: o gradiente e o `.backdrop` fixo, o mesmo do hero e
+   dos beneficios, entao ele atravessa o site inteiro sem emenda. */
+.memoir {
+  position: relative;
+  z-index: 2;
+  height: calc(1607px * var(--km));
+  /* o art-board nao traz respiro nenhum acima: as secoes encostavam uma na
+     outra. O vao entra aqui, em unidades de design, para encolher junto. */
+  margin-top: calc(200px * var(--km));
+  overflow: hidden;
+}
+
+/* As 1440 unidades do art-board, centradas. Abaixo de 1024 a moldura fica
+   mais larga que a janela e o corte cai igual dos dois lados. */
+.memoir__frame {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(1440px * var(--km));
+  height: 100%;
+}
+
+/* node 9111:23 — 266.004 / 0.9 / -7.9801, justificado */
+.memoir__title {
+  position: absolute;
+  left: calc(21.74px * var(--km));
+  top: calc(29.6px * var(--km));
+  width: calc(1396.521px * var(--km));
+  margin: 0;
+  font-weight: 500;
+  font-size: calc(266.004px * var(--km));
+  line-height: 0.9;
+  letter-spacing: calc(-7.9801px * var(--km));
+  text-transform: uppercase;
+  /* o y do Figma e o topo da cap-height, nao o topo da linha */
+  text-box: trim-both cap alphabetic;
+}
+
+.memoir__line,
+.memoir__line > span {
+  display: block;
+}
+
+/* `text-align-last` tambem: no arquivo a ultima linha ("de contar") sai
+   esticada de margem a margem. Linha de palavra unica nao tem espaco para
+   distribuir e continua encostada a esquerda, como no Figma. */
+.memoir__line > span {
+  text-align: justify;
+  text-align-last: justify;
+  will-change: transform, opacity;
+}
+
+/* nodes 9111:22 / :24 / :25 / :26 — posicao e tamanho vem do design.ts */
+.memoir__photo {
+  position: absolute;
+  margin: 0;
+  border-radius: calc(6px * var(--km));
+  overflow: hidden;
+}
+
+/* o enquadramento e o do arquivo: largura cheia, altura e deslocamento em
+   % da moldura. Escala junto sem esticar a foto. */
+.memoir__photo img {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* nodes 9111:19 e 9111:20 — 32 / 1.4 / 0.32, os dois no mesmo topo */
+.memoir__copy {
+  position: absolute;
+  top: calc(1466.6px * var(--km));
+  margin: 0;
+  font-size: calc(32px * var(--km));
+  line-height: 1.4;
+  letter-spacing: calc(0.32px * var(--km));
+  opacity: 0.8;
+  text-box: trim-both cap alphabetic;
+}
+
+/* ------------------------------------------------------------------
+   Frame 9111:2336 — "Quem já dormiu aqui"
+   Art-board de 1440 x 778. Sem fundo proprio: o gradiente e o `.backdrop`.
+   ------------------------------------------------------------------ */
+.voices {
+  position: relative;
+  z-index: 2;
+  /* 778 do art-board mais a folga que o coverflow pede em cima e embaixo */
+  height: calc(840px * var(--km));
+  /* mesmo respiro do memoir — ver o comentario la */
+  margin-top: calc(240px * var(--km));
+  overflow: hidden;
+}
+
+.voices__frame {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(1440px * var(--km));
+  height: 100%;
+}
+
+/* node 9111:2337 — 80 / 0.9 / -2.4, centrado na margem de 32 */
+.voices__title {
+  position: absolute;
+  top: calc(93.85px * var(--km));
+  left: calc(32px * var(--km));
+  width: calc(1376px * var(--km));
+  margin: 0;
+  font-weight: 500;
+  font-size: calc(80px * var(--km));
+  line-height: 0.9;
+  letter-spacing: calc(-2.4px * var(--km));
+  text-transform: uppercase;
+  text-align: center;
+  /* o y do Figma e o topo da cap-height, nao o topo da linha */
+  text-box: trim-both cap alphabetic;
+}
+
+/* so um inline-block para o transform pegar — sem recorte, que moveria
+   a baseline do inline-block para a borda inferior da caixa */
+.voices__word > span {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+/* node 9114:2483 — coverflow. A janela do carrossel e a janela do
+   navegador, nao as 1440 unidades do art-board: assim a fila sai pelas
+   bordas da tela em vez de ser cortada no meio do fundo. Ver Voices.tsx. */
+.voices__viewport {
+  position: absolute;
+  /* 243.85 do arquivo menos o respiro que a entrada dos cards usa */
+  top: calc(123.85px * var(--km));
+  left: 0;
+  width: 100%;
+  /* folga para o card subir na entrada sem bater na aresta do recorte */
+  padding: calc(120px * var(--km)) 0;
+  /* A fuga do 3D fica no centro da janela, que e onde o card fica reto.
+     1400 para 320 de card e a mesma proporcao da referencia: a face que
+     vem para a frente cresce o suficiente para a parede ter volume, sem
+     esticar o card ao ponto de ele parecer outro tamanho. */
+  perspective: calc(1400px * var(--km));
+  perspective-origin: 50% 50%;
+  overflow: hidden;
+  cursor: grab;
+  /* arrastar o carrossel nao pode selecionar o depoimento */
+  user-select: none;
+  -webkit-user-select: none;
+  /* o dedo continua rolando a pagina na vertical */
+  touch-action: pan-y;
+}
+
+.voices__viewport:active {
+  cursor: grabbing;
+}
+
+.voices__track {
+  display: flex;
+  gap: calc(32px * var(--km));
+  /* os slots giram em 3D dentro da trilha; sem isto o giro achata */
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.voices__slot {
+  flex: 0 0 calc(320px * var(--km));
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+
+/* nodes 9111:2388 / 9114:2440 / :2454 / :2468 — todos do mesmo tamanho:
+   o que difere um card do outro na tela e so a perspectiva */
+.voices__card {
+  width: 100%;
+  height: calc(440.09px * var(--km));
+  margin: 0;
+  padding: calc(48px * var(--km));
+  border-radius: calc(6px * var(--km));
+  display: flex;
+  flex-direction: column;
+  /* o vao de 128 do arquivo e exatamente a sobra entre os dois blocos */
+  justify-content: space-between;
+  overflow: hidden;
+  will-change: transform, opacity;
+  /* ancora da camada de fundo */
+  position: relative;
+}
+
+/* O fundo do card.
+   Ele e uma camada propria, maior que o card, porque acompanha o cursor: so
+   `transform` muda, e o compositor resolve isso sozinho — nada de repintar o
+   gradiente ou mexer no layout. A folga de 12% em volta garante que o
+   deslocamento nunca descubra a borda. */
+.voices__fill {
+  position: absolute;
+  /* folga maior que o curso do paralaxe, para nunca descobrir a borda */
+  inset: -22%;
+  z-index: 0;
+  /* o gradiente da propria pagina, girado 180° — ver Voices.tsx */
+  background-image: url("/img/voices-card.jpg");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* o conteudo fica acima da camada de fundo */
+.voices__head,
+.voices__who {
+  position: relative;
+  z-index: 1;
+}
+
+.voices__head {
+  display: flex;
+  flex-direction: column;
+  gap: calc(32px * var(--km));
+}
+
+/* node 9114:2424 — 103.106 x 18.09 */
+.voices__stars {
+  width: calc(103.106px * var(--km));
+  height: calc(18.09px * var(--km));
+}
+
+/* node 9111:2359 — 24 / 1.4 / 0.24 */
+.voices__quote {
+  margin: 0;
+  font-size: calc(24px * var(--km));
+  line-height: 1.4;
+  letter-spacing: calc(0.24px * var(--km));
+  /* a aspa de abertura fica pendurada fora da margem, como no arquivo */
+  text-indent: -0.45em;
+  text-box: trim-both cap alphabetic;
+}
+
+/* node 9111:2387 */
+.voices__who {
+  display: flex;
+  align-items: center;
+  gap: calc(16px * var(--km));
+}
+
+.voices__avatar {
+  flex: 0 0 auto;
+  width: calc(44px * var(--km));
+  height: calc(44px * var(--km));
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+/* node 9111:2341 — 16 / 1.4 / 0.16 no arquivo.
+   O arquivo so tinha "GABRIEL OLIVEIRA / CEO STARTUP", que cabia em uma
+   linha; nome e empresa de verdade nao cabem nos 164 que sobram ao lado do
+   avatar. Entao: corpo menor, e a linha quebra em vez de ser cortada. */
+.voices__id {
+  display: flex;
+  flex-direction: column;
+  gap: calc(6px * var(--km));
+  min-width: 0;
+  line-height: 1.35;
+}
+
+/* as duas linhas ja vem em caixa alta no arquivo */
+.voices__name,
+.voices__stay {
+  text-transform: uppercase;
+  text-box: trim-both cap alphabetic;
+}
+
+.voices__name {
+  font-weight: 500;
+  font-size: calc(14px * var(--km));
+  letter-spacing: calc(0.14px * var(--km));
+}
+
+.voices__stay {
+  opacity: 0.8;
+  font-size: calc(12px * var(--km));
+  letter-spacing: calc(0.24px * var(--km));
+}
+
 /* ------------------------------------------------------------------
    Rodape simples para dar fim ao scroll
    ------------------------------------------------------------------ */
 .outro {
   position: relative;
   z-index: 1;
-  padding: calc(120px * var(--k)) calc(var(--side-clip) + 32px * var(--k))
+  padding: calc(200px * var(--k)) calc(var(--side-clip) + 32px * var(--k))
     calc(64px * var(--k));
   display: flex;
   align-items: flex-end;

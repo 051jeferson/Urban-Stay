@@ -1,10 +1,12 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { Fragment, useEffect, useLayoutEffect, useRef } from 'react'
+import { motion } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
   CARDS,
   CARD_W,
   GRID,
+  HERO,
   RADIUS_ROW,
   RADIUS_WHEEL,
   ROW_CENTER_Y,
@@ -22,6 +24,7 @@ import {
   settle,
   smoothstep,
 } from '../lib/math'
+import { ENTER_DELAY, riseIn, sequence, wordRise, words } from '../lib/motion'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -55,6 +58,33 @@ const BENCH_STAGGER = 0.014
 
 /** Atraso relativo de cada card na emergencia (mantem o final sincronizado). */
 const STAGGER = [0, 0.05, 0.1, 0.02, 0.12, 0.07]
+
+/* --- cascata da copy dos beneficios ---------------------------------
+   Cada palavra do titulo, e depois o lead, saem e entram com um atraso.
+   O atraso desloca a *janela* de cada um, nao a amplitude: assim todos
+   percorrem os mesmos 130% e o que muda e quando.
+
+   `COPY_STAGGER * (n de elementos - 1)` precisa ficar abaixo de 0.25 —
+   o inicio da janela. Acima disso um elemento ainda estaria fora do lugar
+   quando `d` troca de sinal, e a troca viraria um pulo. Com 6 elementos
+   (5 palavras + lead) o pior caso da 0.15. */
+const COPY_STAGGER = 0.03
+
+/** O mesmo atraso na entrada em mascara, agora em progresso do trecho. */
+const COPY_GATE_STAGGER = 0.004
+
+/* --- entrada do hero (Framer Motion) --------------------------------
+   Vale so no carregamento. Depois que o scroll comeca, quem manda no
+   `.hero` continua sendo o `draw` — por isso nada aqui toca o wrapper,
+   so o que esta dentro dele. */
+
+/** As palavras do titulo sobem em cascata, uma mascara por palavra. */
+const HERO_WORDS = words(HERO.title)
+const heroTitle = sequence(0.075, ENTER_DELAY + 0.1)
+const heroWord = wordRise()
+/** o lead e os botoes vem depois da ultima palavra assentar */
+const heroLead = riseIn(0.8, ENTER_DELAY + 0.1 + 0.075 * HERO_WORDS.length + 0.35)
+const heroActions = riseIn(1, ENTER_DELAY + 0.1 + 0.075 * HERO_WORDS.length + 0.45)
 
 /** Cada slot do frame aberto vira um par (angulo, raio) — a roda propriamente dita. */
 const GEOMETRY = CARDS.map(({ slot }) => ({
@@ -234,21 +264,37 @@ export function Stage() {
       // espera abaixo da mascara; quem ja passou sai por cima. A troca
       // acontece no meio do caminho entre duas paradas, entao nunca ha dois
       // textos visiveis ao mesmo tempo.
-      const gate = (1 - smoothstep(range(p, COPY_IN_START, COPY_IN_END))) * 130
       for (let i = 0; i < CARDS.length; i++) {
         const block = copyRefs.current[i]
         if (!block) continue
 
         const d = active - i
-        const away = smoothstep(range(Math.abs(d), 0.25, 0.5))
-        const base = -Math.sign(d) * away * 130
-        // o portao so empurra para baixo na entrada; depois dele o bloco que
-        // ja passou precisa poder sair por cima, com deslocamento negativo
-        const offset = gate > 0 ? Math.max(base, gate) : base
+        // para onde este bloco deve ir: quem ainda vem espera embaixo,
+        // quem ja passou sai por cima
+        const dir = -Math.sign(d)
+        const dist = Math.abs(d)
 
-        const lines = block.querySelectorAll<HTMLElement>('.reveal-line > span')
-        lines.forEach((line, n) => {
-          line.style.transform = `translateY(${offset * (1 + n * 0.12)}%)`
+        // ordem do documento: as palavras do titulo, depois o lead
+        const parts = block.querySelectorAll<HTMLElement>(
+          '.reveal-word > span, .reveal-line > span',
+        )
+        parts.forEach((part, n) => {
+          // A cascata sempre corre do inicio da frase para o fim. Na entrada
+          // isso e a ordem do documento; na saida e a inversa, porque ali
+          // quem tem mais atraso e quem ja andou mais. Sem inverter, o lead
+          // sumiria antes do titulo terminar de sair.
+          const lag = (d > 0 ? parts.length - 1 - n : n) * COPY_STAGGER
+          const away = smoothstep(range(dist + lag, 0.25, 0.5))
+          const base = dir * away * 130
+          const gate =
+            (1 -
+              smoothstep(
+                range(p - n * COPY_GATE_STAGGER, COPY_IN_START, COPY_IN_END),
+              )) *
+            130
+          // o portao so empurra para baixo na entrada; depois dele o bloco
+          // que ja passou precisa poder sair por cima, com valor negativo
+          part.style.transform = `translateY(${gate > 0 ? Math.max(base, gate) : base}%)`
         })
       }
     }
@@ -307,19 +353,45 @@ export function Stage() {
 
         <div className="hero" ref={heroRef} id="top">
           <div className="hero__copy">
-            <h1 className="hero__title">Veja a vida pela nossa moldura</h1>
-            <p className="hero__lead">
-              No centro de Balneário. A dois passos da praia, a dois passos da noite.
-            </p>
+            <motion.h1
+              className="hero__title"
+              variants={heroTitle}
+              initial="hidden"
+              animate="show"
+            >
+              {HERO_WORDS.map((word, i) => (
+                <Fragment key={`${word}-${i}`}>
+                  <span className="reveal-word">
+                    <motion.span variants={heroWord}>{word}</motion.span>
+                  </span>
+                  {/* o espaco fica fora do span animado, para nao subir junto */}
+                  {i < HERO_WORDS.length - 1 ? ' ' : null}
+                </Fragment>
+              ))}
+            </motion.h1>
+            <motion.p
+              className="hero__lead"
+              variants={heroLead}
+              initial="hidden"
+              animate="show"
+            >
+              {HERO.lead}
+            </motion.p>
           </div>
-          <div className="hero__actions">
+          {/* o wrapper anima; os botoes guardam o translateY(-2px) do :hover */}
+          <motion.div
+            className="hero__actions"
+            variants={heroActions}
+            initial="hidden"
+            animate="show"
+          >
             <button type="button" className="btn btn--solid">
               Reservar
             </button>
             <button type="button" className="btn btn--ghost">
               Ver suítes
             </button>
-          </div>
+          </motion.div>
         </div>
 
         <div className="benefits" id="a-casa">
@@ -332,9 +404,15 @@ export function Stage() {
               }}
             >
               <h2 className="benefits__title">
-                <span className="reveal-line">
-                  <span>{card.benefit.title}</span>
-                </span>
+                {words(card.benefit.title).map((word, n, all) => (
+                  <Fragment key={`${word}-${n}`}>
+                    <span className="reveal-word">
+                      <span>{word}</span>
+                    </span>
+                    {/* o espaco fica fora da mascara, para nao subir junto */}
+                    {n < all.length - 1 ? ' ' : null}
+                  </Fragment>
+                ))}
               </h2>
               <p className="benefits__lead">
                 <span className="reveal-line">

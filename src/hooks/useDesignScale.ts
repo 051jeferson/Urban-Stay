@@ -35,6 +35,19 @@ export function benefitsFit(s: DesignScale) {
 }
 
 /**
+ * Escala dos frames que ocupam o art-board inteiro — 9111:4 (a viagem que
+ * ninguem lembra) e 9111:2336 (quem ja dormiu aqui).
+ *
+ * Igual a `--k` de 1024 para cima. Abaixo disso ela nao pode virar o
+ * art-board compacto de 860: essas composicoes usam as 1440 unidades de
+ * ponta a ponta, e recorta-las comeria a primeira e a ultima letra do
+ * titulo, ou os cards das pontas. Entao encolhe em vez de cortar.
+ */
+export function wideFrameScale(s: DesignScale) {
+  return s.compact ? s.vw / FRAME_W : s.k
+}
+
+/**
  * Publica `--k` no `:root` e devolve as medidas. Todo o CSS multiplica os
  * valores do Figma por essa variavel, entao de 1440px para cima o render e 1:1.
  */
@@ -57,6 +70,8 @@ export function useDesignScale(): DesignScale {
       root.style.setProperty('--k', String(next.k))
       // escala do bloco de beneficios: k, encolhido se a janela for baixa
       root.style.setProperty('--kb', String(next.k * fb))
+      // escala dos frames que ocupam as 1440 unidades — ver wideFrameScale
+      root.style.setProperty('--km', String(wideFrameScale(next)))
       // meia largura do art-board visivel, em px
       root.style.setProperty('--frame-half', `${(frame * next.k) / 2}px`)
       // sobra lateral quando a janela passa de 1440 (alinhamento, nao recorte)
