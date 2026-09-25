@@ -708,3 +708,260 @@ a {
   }
 }
 
+/* ------------------------------------------------------------------
+   Loading — o simbolo em movimento (ver components/Loader.tsx)
+
+   A marca e uma esfera fatiada em sete cordas verticais. Cada fatia chega
+   do TSX com tres variaveis:
+
+     --i     indice da esquerda para a direita (0..6)  -> onda que atravessa
+     --dist  distancia ate a fatia central (0..3)      -> onda que abre
+     --cx    centro horizontal da fatia, em unidades do viewBox
+
+   `transform-box: view-box` e o que faz `--cx` ser lido em unidades do
+   viewBox e nao na caixa apertada de cada fatia. Sem ele, um `scaleX`
+   arrastaria a corda para o lado em vez de fecha-la no proprio eixo.
+
+   Tudo aqui e keyframe de CSS: movimento periodico, roda no compositor,
+   nao pede um frame de React por ciclo.
+   ------------------------------------------------------------------ */
+.mark {
+  display: block;
+  width: var(--mark-size, 88px);
+  height: var(--mark-size, 88px);
+  overflow: visible;
+
+  /* entra devagar e assenta quase parando — mesmo tom do --ease-out */
+  --loop-ease: cubic-bezier(0.62, 0, 0.28, 1);
+}
+
+.mark__slice,
+.mark__ghost path {
+  fill: var(--noite-urbana);
+}
+
+.mark__slice {
+  transform-box: view-box;
+  transform-origin: var(--cx) 231.492px;
+  will-change: transform, opacity;
+}
+
+/* congela sem perder o quadro em que estava — usado pela previa */
+.mark.is-still .mark__slice,
+.mark.is-still .mark__sweep {
+  animation-play-state: paused;
+}
+
+/* --- pulso: as cordas fecham no equador e reabrem, do centro para fora - */
+@keyframes mark-pulso {
+  0%,
+  100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  42% {
+    transform: scaleY(0.06);
+    opacity: 0.5;
+  }
+}
+
+.mark--pulso .mark__slice {
+  animation: mark-pulso 1.7s var(--loop-ease) infinite;
+  animation-delay: calc(var(--dist) * 0.12s);
+}
+
+/* --- orbita: cada fatia vira de perfil; a onda atravessa a esfera ------ */
+@keyframes mark-orbita {
+  0% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  32% {
+    transform: scaleX(0.04);
+    opacity: 0.4;
+  }
+  64%,
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+.mark--orbita .mark__slice {
+  animation: mark-orbita 2s var(--loop-ease) infinite;
+  /* atraso positivo e crescente: a onda entra pela esquerda */
+  animation-delay: calc(var(--i) * 0.16s);
+}
+
+/* --- varredura: a marca fica fantasma e a luz passa por cima ---------- */
+.mark--varredura .mark__ghost {
+  opacity: 0.14;
+}
+
+.mark__sweep {
+  transform-box: view-box;
+  /* a faixa nasce em x=-463 (fora do quadro) e anda ate x=463 */
+  animation: mark-sweep 1.9s linear infinite;
+}
+
+@keyframes mark-sweep {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(926px);
+  }
+}
+
+/* --- traco: o contorno desenha, o preenchimento chega depois ---------- */
+.mark--traco .mark__slice {
+  stroke: var(--noite-urbana);
+  stroke-width: 5;
+  stroke-linejoin: round;
+  /* pathLength=1 no TSX: um unico dasharray serve para as sete fatias */
+  stroke-dasharray: 1;
+  animation:
+    mark-traco-line 2.6s var(--loop-ease) infinite,
+    mark-traco-fill 2.6s var(--loop-ease) infinite;
+  animation-delay: calc(var(--dist) * 0.09s);
+}
+
+@keyframes mark-traco-line {
+  0% {
+    stroke-dashoffset: 1;
+    stroke-opacity: 1;
+  }
+  50% {
+    stroke-dashoffset: 0;
+    stroke-opacity: 1;
+  }
+  /* o traco sai antes de voltar ao inicio, entao o salto do dash nao aparece */
+  86%,
+  100% {
+    stroke-dashoffset: 0;
+    stroke-opacity: 0;
+  }
+}
+
+@keyframes mark-traco-fill {
+  0%,
+  46% {
+    fill-opacity: 0;
+  }
+  72%,
+  86% {
+    fill-opacity: 1;
+  }
+  100% {
+    fill-opacity: 0;
+  }
+}
+
+/* Sem movimento: a marca fica inteira e parada. Na varredura a faixa
+   estaciona sobre o quadro — sem isso a mascara esconderia tudo. */
+@media (prefers-reduced-motion: reduce) {
+  .mark__slice {
+    animation: none;
+    transform: none;
+    opacity: 1;
+    fill-opacity: 1;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0;
+  }
+
+  .mark__sweep {
+    animation: none;
+    transform: translateX(463px);
+  }
+}
+
+/* --- a tela de carga ------------------------------------------------- */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: calc(30px * var(--k));
+
+  /* o mesmo fundo do .backdrop: a saida e a marca sumindo sobre o
+     gradiente que ja estava la, nao uma cortina abrindo */
+  background-color: var(--areia-clara);
+  background-image: url("/img/bg-gradient.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.loader__label {
+  font-size: calc(12px * var(--k));
+  letter-spacing: calc(1.4px * var(--k));
+  text-transform: uppercase;
+  opacity: 0.45;
+}
+
+html.is-loading {
+  /* na raiz, e nao no body: com `overflow-x: clip` no html o overflow do
+     body nao propaga para o viewport e um `hidden` la nao travaria nada */
+  overflow: hidden;
+}
+
+/* --- previa das variantes (`?loader`) — some junto com a chamada em App - */
+.loader-preview {
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+  padding: calc(32px * var(--k));
+}
+
+.loader-preview__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(24px * var(--k));
+  margin-bottom: calc(48px * var(--k));
+}
+
+.loader-preview__bar h1 {
+  margin: 0;
+  font-size: calc(24px * var(--k));
+  font-weight: 500;
+  letter-spacing: calc(-0.4px * var(--k));
+}
+
+.loader-preview__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: calc(24px * var(--k));
+}
+
+.loader-preview__grid figure {
+  display: grid;
+  justify-items: center;
+  gap: calc(28px * var(--k));
+  margin: 0;
+  padding: calc(48px * var(--k)) calc(24px * var(--k)) calc(28px * var(--k));
+  border: 1px solid color-mix(in srgb, var(--noite-urbana) 12%, transparent);
+  border-radius: calc(12px * var(--k));
+}
+
+.loader-preview__grid figcaption {
+  display: grid;
+  justify-items: center;
+  gap: calc(6px * var(--k));
+  text-align: center;
+  font-size: calc(14px * var(--k));
+}
+
+.loader-preview__grid strong {
+  font-weight: 500;
+}
+
+.loader-preview__grid span {
+  opacity: 0.6;
+}
+
+.loader-preview__grid code {
+  font-size: calc(12px * var(--k));
+  opacity: 0.45;
+}
