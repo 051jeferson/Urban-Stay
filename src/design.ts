@@ -399,8 +399,185 @@ export const VOICES = [
 ]
 
 export const NAV_LINKS = [
-  { label: 'Suítes', href: '#suites' },
-  { label: 'A casa', href: '#a-casa' },
-  { label: 'Da porta para fora', href: '#da-porta-para-fora' },
-  { label: 'Antes de vir', href: '#antes-de-vir' },
+  { label: 'Empresa', href: '/empresa.html' },
+  { label: 'Atuação', href: '/atuacao.html' },
+  { label: 'Destino', href: '/destino.html' },
+  { label: 'Contato', href: '/contato.html' },
 ]
+
+/** Desdobramento institucional: composição derivada do grid de 9068:919.
+ * Conteúdo editorial novo, sem atribuir coordenadas a nodes inexistentes. */
+export const INSTITUTIONAL = {
+  about: {
+    titleLines: ['O tempo', 'é seu.'],
+    body: 'Ler o jornal pela metade. Deixar o café esfriar. Decidir sair e mudar de ideia.',
+    closing: 'A Urban Stay olha para essa parte da viagem: o tempo que você passa sem precisar chegar a lugar nenhum.',
+  },
+  stays: {
+    title: 'Ficar.',
+  },
+  location: {
+    titleLines: ['Balneário', 'Camboriú.'],
+    body: 'A orla marca o caminho. Os prédios recortam o céu. Entre um e outro, a cidade acontece — e você escolhe onde entrar.',
+    link: 'Abra o mapa da cidade',
+  },
+  faqTitle: 'Quer saber mais?',
+  faq: [
+    { question: 'O que inspira a Urban Stay?', answer: 'O encontro entre a vida urbana e o tempo de descanso. A marca explora os pequenos momentos de uma viagem: a luz da manhã, uma conversa demorada e a liberdade de mudar os planos.' },
+    { question: 'Qual é a relação com Balneário Camboriú?', answer: 'Balneário Camboriú é o cenário da Urban Stay. O mar, a arquitetura e a vida da cidade fazem parte da identidade da marca.' },
+    { question: 'O que encontro neste site?', answer: 'Uma apresentação da marca, de suas referências e do destino. As imagens e os textos compõem o universo visual da Urban Stay.' },
+  ],
+} as const
+
+/** Novas composições derivadas de 9068:919 e 9111:4; sem nodes próprios no Figma. */
+export const JOURNEY = {
+  rooms: [
+    { title: 'A manhã pode esperar.', label: 'Cama', image: '/img/bed.png', alt: 'Sorvete na cama, sob a luz da manhã', text: 'O lençol ainda amassado, a luz atravessando o quarto. Lá fora já é dia. Aqui, ainda cabe mais um pouco.' },
+    { title: 'A última partida. De novo.', label: 'Encontro', image: '/img/cards.png', alt: 'Um jogo de cartas no tapete do quarto', text: 'As cartas no tapete e uma conversa que vai longe. Ninguém está contando as horas.' },
+    { title: 'Perto da janela.', label: 'Vista', image: '/img/window.png', alt: 'Silhueta junto à janela com vista para o mar', text: 'A cidade continua em movimento. Você pode só olhar.' },
+  ],
+} as const
+
+export const LEGAL_LINKS = [
+  { label: 'Privacidade', href: '/privacidade.html' },
+  { label: 'Cookies', href: '/cookies.html' },
+  { label: 'Termos de uso', href: '/termos-de-uso.html' },
+] as const
+
+/** Escalas novas derivadas dos frames 9068:919 / 9111:4, sem nodes próprios. */
+export const EDITORIAL_LAYOUT = {
+  aboutTitle: 180,
+  aboutPhotoHeight: 760,
+  staysTitle: 164,
+  staysPhotoHeight: 780,
+  destinationTitle: 190,
+  destinationPhotoHeight: 620,
+  compactAboutTitle: 140,
+  compactAboutPhotoHeight: 640,
+  compactStaysTitle: 150,
+  compactStaysPhotoHeight: 860,
+  compactDestinationTitle: 108,
+} as const
+
+/** Expansão editorial do grid 9068:919; páginas novas, sem nodes próprios. */
+export const CORPORATE = {
+  eyebrow: 'Hospitalidade · Identidade · Cidade',
+  homeTitle: 'Uma marca.\nMuitas conexões.',
+  homeBody: 'Conheça a Urban Stay, nossa visão de hospitalidade e os caminhos para construir novas relações com a marca.',
+  intro: 'A Urban Stay aproxima a experiência de estar em uma cidade do cuidado com o tempo de cada pessoa. Balneário Camboriú faz parte dessa perspectiva: urbana, aberta e conectada ao mar.',
+  pages: {
+    empresa: { label: 'Empresa', title: 'Um olhar próprio\nsobre estar.', description: 'Nossa identidade, nossos princípios e a visão que orienta a Urban Stay.', image: '/img/memoir-paper.png', alt: 'Jornal e luz natural em um ambiente de descanso' },
+    atuacao: { label: 'Atuação', title: 'Hospitalidade\nem perspectiva.', description: 'Experiência, marca e relações: conheça os temas que aproximam a Urban Stay de pessoas e negócios.', image: '/img/memoir-terrace.png', alt: 'Encontro na varanda ao entardecer' },
+    destino: { label: 'Destino', title: 'A cidade faz\nparte de nós.', description: 'Balneário Camboriú como contexto para pensar o encontro entre vida urbana e hospitalidade.', image: '/img/window.png', alt: 'Vista da cidade e do mar pela janela' },
+    contato: { label: 'Contato', title: 'Boas relações\ncomeçam aqui.', description: 'Um espaço para conversas comerciais, parcerias e assuntos institucionais.', image: '/img/cards.png', alt: 'Cartas sobre o tapete em um momento de encontro' },
+  },
+  principlesTitle: 'O que orienta a marca.',
+  principles: [
+    { title: 'Tempo com significado', text: 'Pensar a hospitalidade a partir das pessoas e da liberdade de viver cada momento no próprio ritmo.' },
+    { title: 'Identidade em cada detalhe', text: 'Buscar coerência entre a forma como a marca se apresenta, os ambientes que a inspiram e as relações que constrói.' },
+    { title: 'Conexão com o lugar', text: 'Valorizar a cidade como parte da experiência, com sua arquitetura, seus encontros e sua vida cotidiana.' },
+  ],
+  areasTitle: 'Diferentes formas de se conectar.',
+  areas: [
+    { title: 'Hospitalidade', text: 'O olhar da Urban Stay sobre os espaços, os pequenos rituais e o tempo de uma estadia.', link: 'Conhecer nossa visão', href: '/empresa.html' },
+    { title: 'Parcerias de marca', text: 'Um ponto de partida para propor colaborações, projetos e iniciativas que dialoguem com o universo da marca.', link: 'Propor uma parceria', href: '/contato.html?assunto=Parcerias' },
+    { title: 'Relações comerciais', text: 'Um canal para apresentar sua empresa, compartilhar uma proposta e iniciar uma conversa sobre possibilidades de colaboração.', link: 'Iniciar uma conversa', href: '/contato.html?assunto=Comercial' },
+  ],
+  destination: [
+    { title: 'Entre a arquitetura e o mar', text: 'O contraste entre a paisagem construída e a linha do horizonte dá à cidade uma identidade própria. É nesse encontro que a Urban Stay encontra parte de suas referências.' },
+    { title: 'Um lugar de encontros', text: 'A cidade é também feita de conversas, pausas e trajetos cotidianos. Nosso olhar vai além da paisagem para considerar as relações que dão sentido a estar aqui.' },
+  ],
+  nextTitle: 'Vamos abrir\nessa conversa?',
+  nextBody: 'Apresente sua empresa, compartilhe uma ideia ou conheça as possibilidades de conexão com a Urban Stay.',
+  contactLabel: 'Fale com a Urban Stay',
+  contact: {
+    email: 'comercial@urbanstay.example', phone: '+55 (00) 00000-0000', company: '[Razão social da Urban Stay]', registration: '[CNPJ a informar]', address: '[Endereço comercial a informar] · Balneário Camboriú, SC',
+    notice: 'Dados de demonstração. Os canais oficiais serão informados em breve.',
+    formTitle: 'Apresente sua proposta.', formBody: 'Prepare uma mensagem para nossa equipe. Neste protótipo, você pode copiar o resumo; nenhum dado é enviado.',
+    name: 'Seu nome', organization: 'Empresa', reply: 'E-mail para retorno', subject: 'Assunto', message: 'Como podemos conversar?',
+    subjects: ['Comercial', 'Parcerias', 'Imprensa', 'Institucional'],
+    submit: 'Preparar mensagem', copy: 'Copiar mensagem', copied: 'Mensagem copiada.', copyError: 'Selecione e copie o texto abaixo.', prepared: 'Sua mensagem está pronta. Nenhum dado foi enviado.', privacy: 'Os dados ficam apenas nesta página e não são armazenados ao sair.',
+  },
+  footerDescription: 'Um olhar sobre hospitalidade, pessoas e o lugar onde elas se encontram.',
+  footerNav: 'Explore a Urban Stay', footerContact: 'Contato comercial',
+  home: 'Início', menu: 'Menu', close: 'Fechar', skip: 'Pular para o conteúdo', discover: 'Conheça a Urban Stay',
+} as const
+
+/** Escalas editoriais derivadas de 9068:919 / 9111:4; sem novos nodes. */
+export const CORPORATE_LAYOUT = {
+  radius: RADIUS_WHEEL, label: 14, body: 18, intro: 22, description: 24,
+  footer: 26, gap: GRID.gutter, noteGap: 40, heading: 44, rowSpace: 48,
+  sectionGap: GRID.gutter * 2, display: 80, breadcrumbGap: 96,
+  title: EDITORIAL_LAYOUT.compactDestinationTitle, sectionSpace: 128,
+  top: EDITORIAL_LAYOUT.aboutTitle, photo: EDITORIAL_LAYOUT.destinationPhotoHeight,
+} as const
+
+/** Páginas internas: nova direção editorial sobre o grid de 9068:919.
+ * As composições não têm nodes próprios; as medidas são decisões editoriais.
+ * Dados independentes de CORPORATE para preservar integralmente a home. */
+export const INTERNAL_LAYOUT = {
+  frame: FRAME_W, gutter: GRID.gutter, margin: GRID.margin,
+  top: 144, space: 128, section: 192, small: 24, fine: 16,
+  title: 176, display: 132, subtitle: 64, heading: 40, body: 22, label: 14,
+  portrait: 680, inset: 248, panorama: 700, contactTitle: 200,
+  logo: 280, compactTitle: 136, compactSpace: 96,
+} as const
+
+export const INTERNAL = {
+  location: 'Balneário Camboriú, SC',
+  company: {
+    title: ['A Urban', 'Stay.'],
+    lead: 'Hospitalidade em Balneário Camboriú.',
+    photo: { src: '/img/memoir-terrace.png', alt: 'Um brinde na varanda com o mar ao fundo', caption: 'A cidade vista de dentro.' },
+    inset: { src: '/img/memoir-paper.png', alt: 'Jornal aberto na poltrona junto à janela', caption: 'Uma pausa no quarto.' },
+    label: 'A marca',
+    statement: 'A estadia também\nfaz parte da viagem.',
+    paragraphs: [
+      'A Urban Stay é uma marca de hospitalidade ligada a Balneário Camboriú. O quarto, a vista e o tempo entre um passeio e outro são o ponto de partida da nossa identidade.',
+      'A cidade aparece nas imagens. O descanso, nos gestos: abrir a janela, deixar a mala, ler algumas páginas. É desse cotidiano que vem o nosso jeito de falar sobre hospedagem.',
+    ],
+    closing: 'Do lado de fora,\nBalneário Camboriú.',
+    closingText: 'O mar e a arquitetura da cidade fazem parte das referências da Urban Stay.',
+    closingLink: 'Conheça o destino',
+    closingPhoto: { src: '/img/memoir-sunset.png', alt: 'Mesa junto à varanda com vista para o mar ao entardecer', caption: 'Luz de fim de tarde, mar ao fundo.' },
+  },
+  activity: {
+    title: 'Nossa atuação.',
+    intro: 'Hospedagem, parcerias e assuntos comerciais. Encontre o caminho para falar com a Urban Stay.',
+    label: 'Áreas de atuação',
+    items: [
+      { title: 'Hospitalidade', tag: 'A experiência de ficar', text: 'A hospedagem está no centro da marca. Nossas referências vêm do uso dos espaços: a cama depois da praia, a conversa na varanda, a cidade pela janela.', detail: 'Conheça a apresentação da Urban Stay e o universo que orienta sua identidade.', link: 'Sobre a Urban Stay', href: '/empresa.html', image: '/img/bed.png', alt: 'Cama desfeita iluminada pelo sol' },
+      { title: 'Parcerias', tag: 'Marcas e projetos', text: 'Tem uma proposta que envolve a Urban Stay? Apresente sua marca, o projeto e o tipo de participação que você imagina.', detail: 'Inclua o escopo, o período previsto e uma pessoa de contato para a conversa.', link: 'Apresentar uma parceria', href: '/contato.html?assunto=Parcerias', image: '/img/cards.png', alt: 'Jogo de cartas no tapete do quarto' },
+      { title: 'Comercial', tag: 'Empresas e fornecedores', text: 'Este é o espaço para apresentar produtos, serviços ou uma proposta comercial à Urban Stay.', detail: 'Conte o que sua empresa faz e acrescente as informações necessárias para avaliar a proposta.', link: 'Contato comercial', href: '/contato.html?assunto=Comercial', image: '/img/camera.png', alt: 'Câmera fotográfica durante uma estadia' },
+    ],
+  },
+  destination: {
+    title: ['Balneário', 'Camboriú.'],
+    region: 'Santa Catarina · Brasil',
+    photo: { src: '/img/window.png', alt: 'Pessoa junto à janela, com vista para os prédios e o mar', caption: 'A orla pela janela.' },
+    label: 'O destino',
+    statement: 'A cidade,\nlogo ali.',
+    paragraphs: ['Uma faixa de mar, edifícios altos e a vida da orla. Balneário Camboriú é o cenário da Urban Stay.', 'Aqui, a paisagem urbana participa da estadia. Aparece pela janela, acompanha o café e muda com a luz do dia.'],
+    mapLabel: 'Abrir mapa da cidade',
+    mapHref: 'https://www.google.com/maps/search/?api=1&query=Balne%C3%A1rio+Cambori%C3%BA+Santa+Catarina',
+    note: 'Mapa de Balneário Camboriú. O endereço da Urban Stay será informado no contato.',
+    detailPhoto: { src: '/img/memoir-sunset.png', alt: 'Vista do mar a partir de uma mesa na varanda', caption: 'O mar acompanha a mesa.' },
+  },
+  contact: {
+    title: 'Contato.', lead: 'Comercial, parcerias\ne imprensa.',
+    note: 'Dados ilustrativos. Canais oficiais a confirmar.',
+    emailLabel: 'E-mail comercial', phoneLabel: 'Telefone', addressLabel: 'Endereço', companyLabel: 'Dados da empresa',
+    formTitle: 'Escreva para a Urban Stay',
+    formNote: 'Formulário demonstrativo: a mensagem pode ser copiada, mas ainda não é enviada.',
+    name: 'Nome', organization: 'Empresa', email: 'E-mail', subject: 'Assunto', message: 'Mensagem',
+    submit: 'Revisar mensagem', privacy: 'Seus dados não são armazenados nesta demonstração.',
+    summaryTitle: 'Mensagem para revisão', ready: 'Mensagem preparada. Nenhum dado foi enviado.',
+    copy: 'Copiar mensagem', copied: 'Mensagem copiada.', copyError: 'Não foi possível copiar automaticamente. Selecione o texto abaixo para copiar.',
+    privacyLink: 'Privacidade',
+  },
+  footer: {
+    nextLabel: 'Continue', linksLabel: 'Navegação', legalLabel: 'Informações legais',
+    signature: 'Hospitalidade em Balneário Camboriú.',
+    next: { empresa: { label: 'Nossa atuação', href: '/atuacao.html' }, atuacao: { label: 'Contato', href: '/contato.html' }, destino: { label: 'A Urban Stay', href: '/empresa.html' }, contato: { label: 'A Urban Stay', href: '/empresa.html' } },
+  },
+} as const

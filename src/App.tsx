@@ -1,16 +1,15 @@
 import { useCallback, useState } from 'react'
-import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
+import { AnimatePresence, MotionConfig } from 'framer-motion'
 import { Loader, LoaderPreview } from './components/Loader'
-import { Memoir } from './components/Memoir'
 import { Nav } from './components/Nav'
 import { Stage } from './components/Stage'
-import { Voices } from './components/Voices'
+import { Footer } from './components/Institutional'
+import { CorporateDirectory, CorporateNext } from './components/Corporate'
+import { InternalContent, InternalFooter } from './components/InternalPages'
+import type { CorporatePage } from './components/Corporate'
+import { CORPORATE } from './design'
 import { useSmoothScroll } from './hooks/useSmoothScroll'
 import { useDesignScale } from './hooks/useDesignScale'
-import { riseIn } from './lib/motion'
-
-/** O rodape aparece quando entra em cena; 0.7 e a opacidade do CSS. */
-const outro = riseIn(0.7)
 
 /**
  * `?loader` troca o site pela vitrine das variantes do loading. E um atalho
@@ -19,12 +18,14 @@ const outro = riseIn(0.7)
  * `LoaderPreview` do `Loader.tsx`.
  */
 const PREVIEW = new URLSearchParams(window.location.search).has('loader')
+const pageKey = window.location.pathname.split('/').pop()?.replace('.html', '') ?? ''
+const page = Object.hasOwn(CORPORATE.pages, pageKey) ? pageKey as CorporatePage : null
 
 export default function App() {
   useSmoothScroll()
   useDesignScale()
 
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!page)
   // identidade estavel: o efeito do Loader depende de `onDone`
   const done = useCallback(() => setLoading(false), [])
 
@@ -39,23 +40,13 @@ export default function App() {
         {loading && <Loader variant="pulso" onDone={done} />}
       </AnimatePresence>
 
-      <div className="backdrop" aria-hidden />
+      <div className={page ? 'internal-backdrop' : 'backdrop'} aria-hidden />
       <Nav />
-      <main>
-        <Stage />
-        <Memoir />
-        <Voices />
+      <a className="skip-link" href={page ? '#conteudo' : '#institucional'}>{CORPORATE.skip}</a>
+      <main id="conteudo" tabIndex={-1}>
+        {page ? <InternalContent page={page} /> : <><Stage /><CorporateDirectory /><CorporateNext /></>}
       </main>
-      <motion.footer
-        className="outro"
-        variants={outro}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, amount: 0.4 }}
-      >
-        <span>Urban Stay® — Balneário Camboriú</span>
-        <span>© {new Date().getFullYear()}</span>
-      </motion.footer>
+      {page ? <InternalFooter page={page} /> : <Footer />}
     </MotionConfig>
   )
 }

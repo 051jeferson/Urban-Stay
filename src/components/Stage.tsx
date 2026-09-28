@@ -7,6 +7,7 @@ import {
   CARD_W,
   GRID,
   HERO,
+  CORPORATE,
   RADIUS_ROW,
   RADIUS_WHEEL,
   ROW_CENTER_Y,
@@ -385,12 +386,7 @@ export function Stage() {
             initial="hidden"
             animate="show"
           >
-            <button type="button" className="btn btn--solid">
-              Reservar
-            </button>
-            <button type="button" className="btn btn--ghost">
-              Ver suítes
-            </button>
+            <a className="btn btn--ghost" href="/empresa.html">{CORPORATE.discover}</a>
           </motion.div>
         </div>
 

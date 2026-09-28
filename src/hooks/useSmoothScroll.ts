@@ -15,6 +15,7 @@ export function useSmoothScroll() {
     if (reduced) return
 
     const lenis = new Lenis({
+      anchors: true,
       duration: 1.15,
       lerp: 0.09,
       wheelMultiplier: 1,

@@ -1,0 +1,19 @@
+/* Composição editorial derivada das margens de 9068:919. */
+body { background: var(--areia-clara); }
+.legal-header, .legal-main, .legal-footer { max-width: calc(1440px * var(--k)); margin-inline: auto; padding-inline: calc(32px * var(--k)); }
+.legal-header { padding-block: calc(48px * var(--k)); }
+.legal-header img { width: max(10rem, calc(202px * var(--k))); height: auto; }
+.legal-main { padding-block: calc(96px * var(--k)); }
+.legal-main h1 { font-size: max(2.5rem, calc(88px * var(--k))); line-height: 1; font-weight: 500; letter-spacing: -.045em; margin: 0 0 calc(32px * var(--k)); max-width: 15ch; }
+.legal-date { font-size: .85rem; opacity: .65; }
+.legal-main .legal-intro { font-size: max(1.2rem, calc(26px * var(--k))); margin-block: calc(48px * var(--k)); }
+.legal-main section, .legal-intro, .legal-source { max-width: 70ch; }
+.legal-main section { margin-block: calc(48px * var(--k)); }
+.legal-main h2 { font-size: max(1.25rem, calc(28px * var(--k))); line-height: 1.2; font-weight: 500; letter-spacing: -.02em; }
+.legal-main p { font-size: max(1rem, calc(18px * var(--k))); line-height: 1.65; overflow-wrap: anywhere; }
+.legal-footer { padding-block: calc(32px * var(--k)); display: flex; justify-content: space-between; gap: calc(32px * var(--k)); flex-wrap: wrap; font-size: .85rem; }
+.legal-footer nav { display: flex; flex-wrap: wrap; gap: calc(24px * var(--k)); }
+.legal-main a, .legal-footer a[aria-current] { text-decoration: underline; text-underline-offset: .25em; }
+a:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
+.legal-skip { position: absolute; transform: translateY(-200%); padding: 1rem; background: var(--areia-clara); }
+.legal-skip:focus { transform: none; }

@@ -4,6 +4,8 @@ node_modules/
 # build
 dist/
 dist-ssr/
+.verify-build/
+.visual-check/
 *.local
 
 # typescript
