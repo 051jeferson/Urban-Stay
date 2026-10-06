@@ -90,12 +90,8 @@ export const ROW_LEAD_H = 628.695
 export const ROW_W = 321.206
 export const ROW_H = 463
 
-/**
- * A esteira e uma fita de 12 posicoes: os 6 cards que vem da roda mais 6
- * ecos das mesmas fotos. Os ecos so existem para que, quando o ultimo card
- * encostar na margem, ainda haja esteira a direita em vez de vazio.
- */
-export const ROW_SLOTS = 12
+/** Galeria finita de seis fotografias, sem repetição no encerramento. */
+export const ROW_SLOTS = 6
 
 /** Centro vertical da esteira — todo card cresce e encolhe em torno dele. */
 export const ROW_CENTER_Y = ROW_TOP + ROW_LEAD_H / 2
@@ -128,8 +124,8 @@ export const CARDS: CardSpec[] = [
   {
     photo: {
       id: 'suitcase',
-      src: '/img/suitcase.png',
-      alt: 'Hóspede saindo da suíte com a mala',
+      src: '/img/editorial/suitcase-1000.webp',
+      alt: 'Mala clara pronta para uma viagem',
       fit: '50% 50%',
     },
     slot: { x: COL_L, y: -330.0145 },
@@ -142,9 +138,9 @@ export const CARDS: CardSpec[] = [
   {
     photo: {
       id: 'bed',
-      src: '/img/bed.png',
+      src: '/img/editorial/bed-1000.webp',
       alt: 'Cama desfeita na luz da manhã',
-      fit: '50% 100%',
+      fit: '50% 50%',
     },
     slot: { x: COL_C, y: -557.4345 },
     benefit: {
@@ -156,7 +152,7 @@ export const CARDS: CardSpec[] = [
   {
     photo: {
       id: 'robe',
-      src: '/img/robe.png',
+      src: '/img/editorial/robe-1000.webp',
       alt: 'Hóspede pulando na cama de roupão',
       fit: '50% 50%',
     },
@@ -170,8 +166,8 @@ export const CARDS: CardSpec[] = [
   {
     photo: {
       id: 'cards',
-      src: '/img/cards.png',
-      alt: 'Jogo de cartas no tapete da suíte',
+      src: '/img/editorial/cards-1000.webp',
+      alt: 'Casal jogando cartas à mesa com vinho',
       fit: '50% 50%',
     },
     slot: { x: COL_R, y: 335.7055 },
@@ -184,8 +180,8 @@ export const CARDS: CardSpec[] = [
   {
     photo: {
       id: 'camera',
-      src: '/img/camera.png',
-      alt: 'Casal fotografando na cama',
+      src: '/img/editorial/camera-1000.webp',
+      alt: 'Câmera analógica sobre a cama na luz natural',
       fit: '50% 50%',
     },
     slot: { x: COL_C, y: 539.0155 },
@@ -198,10 +194,10 @@ export const CARDS: CardSpec[] = [
   {
     photo: {
       id: 'window',
-      src: '/img/window.png',
+      src: '/img/editorial/window-1000.webp',
       alt: 'Silhueta em frente à janela ao entardecer',
-      // a origem e 16:9; o recorte vertical do Figma centraliza a silhueta
-      fit: '68% 50%',
+      // O arquivo editorial já preserva o recorte da silhueta em 68%.
+      fit: '50% 50%',
     },
     slot: { x: COL_L, y: 335.7055 },
     benefit: {
@@ -432,9 +428,9 @@ export const INSTITUTIONAL = {
 /** Novas composições derivadas de 9068:919 e 9111:4; sem nodes próprios no Figma. */
 export const JOURNEY = {
   rooms: [
-    { title: 'A manhã pode esperar.', label: 'Cama', image: '/img/bed.png', alt: 'Sorvete na cama, sob a luz da manhã', text: 'O lençol ainda amassado, a luz atravessando o quarto. Lá fora já é dia. Aqui, ainda cabe mais um pouco.' },
-    { title: 'A última partida. De novo.', label: 'Encontro', image: '/img/cards.png', alt: 'Um jogo de cartas no tapete do quarto', text: 'As cartas no tapete e uma conversa que vai longe. Ninguém está contando as horas.' },
-    { title: 'Perto da janela.', label: 'Vista', image: '/img/window.png', alt: 'Silhueta junto à janela com vista para o mar', text: 'A cidade continua em movimento. Você pode só olhar.' },
+    { title: 'A manhã pode esperar.', label: 'Cama', image: '/img/editorial/bed-1000.webp', alt: 'Cama desfeita sob a luz da manhã', text: 'O lençol ainda amassado, a luz atravessando o quarto. Lá fora já é dia. Aqui, ainda cabe mais um pouco.' },
+    { title: 'A última partida. De novo.', label: 'Encontro', image: '/img/editorial/cards-1000.webp', alt: 'Um jogo de cartas a dois à mesa', text: 'As cartas na mesa e uma conversa que vai longe. Ninguém está contando as horas.' },
+    { title: 'Perto da janela.', label: 'Vista', image: '/img/editorial/window-1000.webp', alt: 'Silhueta junto à janela com vista para o mar', text: 'A cidade continua em movimento. Você pode só olhar.' },
   ],
 } as const
 
@@ -468,8 +464,8 @@ export const CORPORATE = {
   pages: {
     empresa: { label: 'Empresa', title: 'Um olhar próprio\nsobre estar.', description: 'Nossa identidade, nossos princípios e a visão que orienta a Urban Stay.', image: '/img/memoir-paper.png', alt: 'Jornal e luz natural em um ambiente de descanso' },
     atuacao: { label: 'Atuação', title: 'Hospitalidade\nem perspectiva.', description: 'Experiência, marca e relações: conheça os temas que aproximam a Urban Stay de pessoas e negócios.', image: '/img/memoir-terrace.png', alt: 'Encontro na varanda ao entardecer' },
-    destino: { label: 'Destino', title: 'A cidade faz\nparte de nós.', description: 'Balneário Camboriú como contexto para pensar o encontro entre vida urbana e hospitalidade.', image: '/img/window.png', alt: 'Vista da cidade e do mar pela janela' },
-    contato: { label: 'Contato', title: 'Boas relações\ncomeçam aqui.', description: 'Um espaço para conversas comerciais, parcerias e assuntos institucionais.', image: '/img/cards.png', alt: 'Cartas sobre o tapete em um momento de encontro' },
+    destino: { label: 'Destino', title: 'A cidade faz\nparte de nós.', description: 'Balneário Camboriú como contexto para pensar o encontro entre vida urbana e hospitalidade.', image: '/img/editorial/window-1000.webp', alt: 'Vista da cidade e do mar pela janela' },
+    contato: { label: 'Contato', title: 'Boas relações\ncomeçam aqui.', description: 'Um espaço para conversas comerciais, parcerias e assuntos institucionais.', image: '/img/editorial/cards-1000.webp', alt: 'Jogo de cartas à mesa em um momento de encontro' },
   },
   principlesTitle: 'O que orienta a marca.',
   principles: [
@@ -546,22 +542,22 @@ export const INTERNAL = {
     intro: 'Hospedagem, parcerias e assuntos comerciais. Encontre o caminho para falar com a Urban Stay.',
     label: 'Áreas de atuação',
     items: [
-      { title: 'Hospitalidade', tag: 'A experiência de ficar', text: 'A hospedagem está no centro da marca. Nossas referências vêm do uso dos espaços: a cama depois da praia, a conversa na varanda, a cidade pela janela.', detail: 'Conheça a apresentação da Urban Stay e o universo que orienta sua identidade.', link: 'Sobre a Urban Stay', href: '/empresa.html', image: '/img/bed.png', alt: 'Cama desfeita iluminada pelo sol' },
-      { title: 'Parcerias', tag: 'Marcas e projetos', text: 'Tem uma proposta que envolve a Urban Stay? Apresente sua marca, o projeto e o tipo de participação que você imagina.', detail: 'Inclua o escopo, o período previsto e uma pessoa de contato para a conversa.', link: 'Apresentar uma parceria', href: '/contato.html?assunto=Parcerias', image: '/img/cards.png', alt: 'Jogo de cartas no tapete do quarto' },
-      { title: 'Comercial', tag: 'Empresas e fornecedores', text: 'Este é o espaço para apresentar produtos, serviços ou uma proposta comercial à Urban Stay.', detail: 'Conte o que sua empresa faz e acrescente as informações necessárias para avaliar a proposta.', link: 'Contato comercial', href: '/contato.html?assunto=Comercial', image: '/img/camera.png', alt: 'Câmera fotográfica durante uma estadia' },
+      { title: 'Hospitalidade', tag: 'A experiência de ficar', text: 'A hospedagem está no centro da marca. Nossas referências vêm do uso dos espaços: a cama depois da praia, a conversa na varanda, a cidade pela janela.', detail: 'Conheça a apresentação da Urban Stay e o universo que orienta sua identidade.', link: 'Sobre a Urban Stay', href: '/empresa.html', image: '/img/editorial/hospitalidade-1000.webp', alt: 'Pausa na banheira em um banheiro de azulejos claros e vinho' },
+      { title: 'Parcerias', tag: 'Marcas e projetos', text: 'Tem uma proposta que envolve a Urban Stay? Apresente sua marca, o projeto e o tipo de participação que você imagina.', detail: 'Inclua o escopo, o período previsto e uma pessoa de contato para a conversa.', link: 'Apresentar uma parceria', href: '/contato.html?assunto=Parcerias', image: '/img/editorial/parcerias-1000.webp', alt: 'Duas pessoas jogando cartas sobre um tapete' },
+      { title: 'Comercial', tag: 'Empresas e fornecedores', text: 'Este é o espaço para apresentar produtos, serviços ou uma proposta comercial à Urban Stay.', detail: 'Conte o que sua empresa faz e acrescente as informações necessárias para avaliar a proposta.', link: 'Contato comercial', href: '/contato.html?assunto=Comercial', image: '/img/editorial/comercial-1000.webp', alt: 'Pessoas fotografando um momento de descanso no quarto' },
     ],
   },
   destination: {
     title: ['Balneário', 'Camboriú.'],
     region: 'Santa Catarina · Brasil',
-    photo: { src: '/img/window.png', alt: 'Pessoa junto à janela, com vista para os prédios e o mar', caption: 'A orla pela janela.' },
+    photo: { src: '/img/editorial/destino-orla-1000.webp', alt: 'Vista aérea da faixa de areia e das ondas em Balneário Camboriú', caption: 'Entre a areia e o mar.' },
     label: 'O destino',
     statement: 'A cidade,\nlogo ali.',
     paragraphs: ['Uma faixa de mar, edifícios altos e a vida da orla. Balneário Camboriú é o cenário da Urban Stay.', 'Aqui, a paisagem urbana participa da estadia. Aparece pela janela, acompanha o café e muda com a luz do dia.'],
     mapLabel: 'Abrir mapa da cidade',
     mapHref: 'https://www.google.com/maps/search/?api=1&query=Balne%C3%A1rio+Cambori%C3%BA+Santa+Catarina',
     note: 'Mapa de Balneário Camboriú. O endereço da Urban Stay será informado no contato.',
-    detailPhoto: { src: '/img/memoir-sunset.png', alt: 'Vista do mar a partir de uma mesa na varanda', caption: 'O mar acompanha a mesa.' },
+    detailPhoto: { src: '/img/editorial/destino-costa-1000.webp', alt: 'Praia de Balneário Camboriú entre pedras, vegetação e mar azul', caption: 'Outro ritmo, junto ao mar.' },
   },
   contact: {
     title: 'Contato.', lead: 'Comercial, parcerias\ne imprensa.',

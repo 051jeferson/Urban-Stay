@@ -207,7 +207,6 @@ export function Loader({ variant = 'pulso', minDuration = 1400, onDone }: Loader
       aria-live="polite"
     >
       <Mark variant={variant} size={104} />
-      <span className="loader__label">Urban Stay®</span>
     </motion.div>
   )
 }

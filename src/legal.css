@@ -17,3 +17,11 @@ body { background: var(--areia-clara); }
 a:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
 .legal-skip { position: absolute; transform: translateY(-200%); padding: 1rem; background: var(--areia-clara); }
 .legal-skip:focus { transform: none; }
+
+/* Mobile: margens consistentes com as páginas internas (grid 9068:919). */
+@media (max-width: 1023px) {
+  .legal-header, .legal-main, .legal-footer { padding-inline: 20px; }
+  .legal-main { padding-block: 40px; }
+  .legal-main section { margin-block: 32px; }
+  .legal-footer nav { gap: 12px 20px; }
+}

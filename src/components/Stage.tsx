@@ -12,6 +12,7 @@ import {
   RADIUS_WHEEL,
   ROW_CENTER_Y,
   ROW_LEAD_W,
+  ROW_LEAD_H,
   ROW_SLOTS,
   ROW_W,
 } from '../design'
@@ -26,11 +27,10 @@ import {
   smoothstep,
 } from '../lib/math'
 import { ENTER_DELAY, riseIn, sequence, wordRise, words } from '../lib/motion'
+import { stageProgress, heroReleaseProgress } from '../lib/stageProgress'
+import { photoSrcSet, STAGE_PHOTO_SIZES } from '../lib/photos'
 
 gsap.registerPlugin(ScrollTrigger)
-
-/** Altura total do trecho fixado, em viewports. */
-const TRACK_VH = 820
 
 /* --- marcos do timeline, em progresso normalizado do trecho fixado ---
    0.00 → 0.35   a roda nasce no centro, gira e cresce ate o frame 9068:893
@@ -93,7 +93,7 @@ const GEOMETRY = CARDS.map(({ slot }) => ({
   radius: Math.hypot(slot.x, slot.y),
 }))
 
-/** A fita: os 6 cards da roda seguidos de 6 ecos das mesmas fotos. */
+/** Galeria finita: cada fotografia aparece uma única vez. */
 const STRIP = Array.from({ length: ROW_SLOTS }, (_, j) => ({
   card: CARDS[j % CARDS.length],
   /** so as 6 primeiras posicoes vem da roda; o resto nasce na esteira */
@@ -158,17 +158,45 @@ export function Stage() {
     let fb = 1
     let frameW = 1440
     let pinDistance = 1
+    let compact = false
+    let stageHeight = 1
+    let heroLimit = 1
+    let mobileRowTop = 0
+    // Os elementos das máscaras não mudam durante o scroll.
+    const copyParts = copyRefs.current.map(block =>
+      Array.from(block?.querySelectorAll<HTMLElement>(
+        '.reveal-word > span, .reveal-line > span',
+      ) ?? []),
+    )
 
     const readScale = () => {
       k = readVar('--k', 1)
       // --kb ja e k multiplicado pelo encolhimento da secao de beneficios
       fb = readVar('--kb', k) / k
       frameW = (readVar('--frame-half', 720) * 2) / k
+      compact = window.matchMedia('(max-width: 1023px)').matches
+      // A altura real do sticky usa svh; innerHeight oscila com a barra do celular.
+      stageHeight = track.firstElementChild?.clientHeight || window.innerHeight
+      if (compact) {
+        // Composição mobile derivada de 9068:919: foto proporcional e respiro da navegação.
+        const viewportWidth = document.documentElement.clientWidth
+        const photoWidth = Math.min(viewportWidth * 0.76, stageHeight * 0.52 * ROW_LEAD_W / ROW_LEAD_H)
+        fb = photoWidth / ROW_LEAD_W / k
+        const navBottom = document.querySelector('.nav')?.getBoundingClientRect().bottom ?? 60
+        // Centraliza o conjunto no espaço abaixo do menu (adaptação de 9068:919).
+        // A maior legenda mantém a posição estável durante a troca dos benefícios.
+        const copyHeight = Math.max(...copyRefs.current.map(block => block?.offsetHeight ?? 0))
+        const compositionHeight = ROW_LEAD_H * fb * k + 32 + copyHeight
+        mobileRowTop = Math.max(navBottom + 28, navBottom + (stageHeight - navBottom - compositionHeight) / 2)
+        track.style.setProperty('--mobile-copy-top', `${mobileRowTop + ROW_LEAD_H * fb * k + 32}px`)
+      }
+      heroLimit = stageHeight / 2 + (heroRef.current?.offsetHeight ?? 0) / 2 + 40
     }
 
     const row: RowFrame[] = new Array(ROW_SLOTS)
 
-    const draw = (p: number) => {
+    const draw = (scrollProgress: number) => {
+      const p = stageProgress(scrollProgress, compact)
       // usado pelos ecos, que nao tem origem na roda
       const benchP = easeInOutCubic(range(p, BENCH_START, BENCH_END))
 
@@ -181,8 +209,10 @@ export function Stage() {
 
       layoutRow(active, row)
 
-      const halfViewport = window.innerHeight / k / 2
-      const rowY = ROW_CENTER_Y * fb - halfViewport
+      const halfViewport = stageHeight / k / 2
+      const rowY = compact
+        ? mobileRowTop / k + ROW_LEAD_H * fb / 2 - halfViewport
+        : ROW_CENTER_Y * fb - halfViewport
 
       for (let j = 0; j < ROW_SLOTS; j++) {
         const el = cardRefs.current[j]
@@ -190,7 +220,9 @@ export function Stage() {
 
         const slot = STRIP[j]
         const target = row[j]
-        const targetX = target.center * fb - frameW / 2
+        const targetX = compact
+          ? (target.center - GRID.margin) * fb + 24 / k - frameW / 2
+          : target.center * fb - frameW / 2
         const targetScale = (target.width / CARD_W) * fb
 
         let x = targetX
@@ -242,7 +274,6 @@ export function Stage() {
           `translate3d(${x * k}px, ${y * k}px, 0) rotate(${rot}deg) scale(${scale})`
         // o raio do Figma nao pode crescer junto com o scale
         el.style.borderRadius = `${(radiusPx * k) / Math.max(scale, 0.001)}px`
-        el.style.zIndex = String(10 - j)
 
         const img = imgRefs.current[j]
         if (img) img.style.transform = `scale(${imgScale})`
@@ -253,11 +284,14 @@ export function Stage() {
       // exatamente na velocidade do scroll, como se nunca tivesse sido fixada.
       const hero = heroRef.current
       if (hero) {
-        const travel = Math.max(0, p - HERO_RELEASE) * pinDistance
-        const limit = window.innerHeight / 2 + hero.offsetHeight / 2 + 40
-        const yHero = -Math.min(travel, limit)
+        const travel = Math.max(0, scrollProgress - heroReleaseProgress(HERO_RELEASE, compact)) * pinDistance
+        const yHero = -Math.min(travel, heroLimit)
         hero.style.transform = `translate3d(-50%, calc(-50% + ${yHero}px), 0)`
-        hero.style.pointerEvents = travel > 0 ? 'none' : 'auto'
+        // No mobile, encerra a abertura antes do desenrolar das fotos (9068:838 → 9068:919).
+        const heroOpacity = compact ? 1 - smoothstep(range(p, 0.18, 0.27)) : 1
+        hero.style.opacity = String(heroOpacity)
+        hero.style.visibility = heroOpacity > 0 ? 'visible' : 'hidden'
+        hero.style.pointerEvents = travel > 0 || heroOpacity < 1 ? 'none' : 'auto'
       }
 
       // --- beneficios ---------------------------------------------------
@@ -276,9 +310,20 @@ export function Stage() {
         const dist = Math.abs(d)
 
         // ordem do documento: as palavras do titulo, depois o lead
-        const parts = block.querySelectorAll<HTMLElement>(
-          '.reveal-word > span, .reveal-line > span',
-        )
+        const parts = copyParts[i]
+        if (compact) {
+          // No celular, o bloco inteiro permanece legível durante a passagem.
+          const visible = (1 - smoothstep(range(dist, 0.25, 0.5))) *
+            smoothstep(range(p, COPY_IN_START, COPY_IN_END))
+          block.style.opacity = String(visible)
+          block.style.visibility = visible > 0 ? 'visible' : 'hidden'
+          block.style.transform = `translateY(${dir * (1 - visible) * 12}px)`
+          parts.forEach(part => { part.style.transform = 'none' })
+          continue
+        }
+        block.style.opacity = ''
+        block.style.visibility = ''
+        block.style.transform = ''
         parts.forEach((part, n) => {
           // A cascata sempre corre do inicio da frase para o fim. Na entrada
           // isso e a ordem do documento; na saida e a inversa, porque ali
@@ -318,7 +363,15 @@ export function Stage() {
     pinDistance = Math.max(1, st.end - st.start)
     draw(st.progress)
 
-    return () => st.kill()
+    // Fonte, mudança de escala e rotação recalculam medidas fora do draw.
+    const resize = new ResizeObserver(() => ScrollTrigger.refresh())
+    resize.observe(track)
+    if (heroRef.current) resize.observe(heroRef.current)
+
+    return () => {
+      resize.disconnect()
+      st.kill()
+    }
   }, [])
 
   // Depois que as fontes carregam as medidas mudam — recalcula os gatilhos.
@@ -327,12 +380,13 @@ export function Stage() {
   }, [])
 
   return (
-    <div className="stage-track" ref={trackRef} style={{ height: `${TRACK_VH}svh` }}>
+    <div className="stage-track" ref={trackRef}>
       <div className="stage">
         {STRIP.map((slot, j) => (
           <div
             key={slot.key}
             className="card"
+            style={{ zIndex: 10 - j }}
             ref={(el) => {
               cardRefs.current[j] = el
             }}
@@ -340,10 +394,12 @@ export function Stage() {
             <img
               className="card__img"
               src={slot.card.photo.src}
+              srcSet={photoSrcSet(slot.card.photo.src)}
+              sizes={STAGE_PHOTO_SIZES}
               alt={j < CARDS.length ? slot.card.photo.alt : ''}
               aria-hidden={j >= CARDS.length}
               style={{ objectPosition: slot.card.photo.fit }}
-              loading={j < 3 ? 'eager' : 'lazy'}
+              loading={slot.fromWheel ? 'eager' : 'lazy'}
               decoding="async"
               ref={(el) => {
                 imgRefs.current[j] = el
@@ -376,7 +432,11 @@ export function Stage() {
               initial="hidden"
               animate="show"
             >
-              {HERO.lead}
+              {HERO.lead.split(/(?<=[.,])\s+/).map((phrase, index) => (
+                <Fragment key={phrase}>
+                  {index > 0 ? ' ' : null}<span className="hero__lead-part">{phrase}</span>
+                </Fragment>
+              ))}
             </motion.p>
           </div>
           {/* o wrapper anima; os botoes guardam o translateY(-2px) do :hover */}
@@ -386,7 +446,7 @@ export function Stage() {
             initial="hidden"
             animate="show"
           >
-            <a className="btn btn--ghost" href="/empresa.html">{CORPORATE.discover}</a>
+            <a className="internal-link" href="/empresa.html">{CORPORATE.discover}<span aria-hidden="true">↗</span></a>
           </motion.div>
         </div>
 

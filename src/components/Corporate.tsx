@@ -14,7 +14,7 @@ export function CorporateDirectory() {
 }
 
 export function CorporateNext() {
-  return <section className="editorial corporate-next"><h2>{CORPORATE.nextTitle}</h2><div><p>{CORPORATE.nextBody}</p><a className="text-link" href="/contato.html">{CORPORATE.contactLabel}<span aria-hidden="true">↗</span></a></div></section>
+  return <section className="editorial corporate-next"><h2>{CORPORATE.nextTitle}</h2><div><p>{CORPORATE.nextBody}</p><a className="internal-link" href="/contato.html">{CORPORATE.contactLabel}<span aria-hidden="true">↗</span></a></div></section>
 }
 
 function ContactForm() {

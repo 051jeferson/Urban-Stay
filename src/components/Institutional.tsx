@@ -84,7 +84,7 @@ export function Questions() {
 export function Footer() {
   const reduced = useReducedMotion()
   return <footer className="site-footer"><div className="editorial">
-    <div className="footer-corporate"><p>{CORPORATE.footerDescription}</p><div><h2>{CORPORATE.footerNav}</h2><nav aria-label="Navegação do rodapé"><a href="/">{CORPORATE.home}</a>{NAV_LINKS.map(link => <a key={link.href} href={link.href}>{link.label}</a>)}</nav></div><div><h2>{CORPORATE.footerContact}</h2><address>{CORPORATE.contact.email}<br />{CORPORATE.contact.phone}</address><p className="corporate-note">{CORPORATE.contact.notice}</p></div></div>
+    <div className="footer-corporate"><p>{CORPORATE.footerDescription}</p><div><nav aria-label="Navegação do rodapé"><a href="/">{CORPORATE.home}</a>{NAV_LINKS.map(link => <a key={link.href} href={link.href}>{link.label}</a>)}</nav></div><div><address>{CORPORATE.contact.email}<br />{CORPORATE.contact.phone}</address><p className="corporate-note">{CORPORATE.contact.notice}</p></div></div>
     <div className="footer-signature">
       <img className="footer-logo" src="/img/logo.svg" alt="Urban Stay" loading="lazy" />
       <motion.div className="footer-signature__reveal" aria-hidden="true" initial={reduced ? false : 'hidden'} whileInView="visible" viewport={{ once: true, amount: 0.7 }}>

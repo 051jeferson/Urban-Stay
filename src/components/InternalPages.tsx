@@ -1,15 +1,25 @@
 import { useRef, useState } from 'react'
 import type { CSSProperties, FormEvent } from 'react'
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { CORPORATE, INTERNAL, INTERNAL_LAYOUT, LEGAL_LINKS, NAV_LINKS } from '../design'
 import type { CorporatePage } from './Corporate'
+import { photoSrcSet } from '../lib/photos'
 import '../internal.css'
 
 const layout = Object.fromEntries(Object.entries(INTERNAL_LAYOUT).map(([name, value]) => [`--i-${name}`, `${value}px`])) as CSSProperties
 type Photo = { src: string; alt: string; caption: string }
 
 function Photograph({ photo, className = '', eager = false }: { photo: Photo; className?: string; eager?: boolean }) {
-  return <figure className={`internal-photo ${className}`}>
-    <img src={photo.src} alt={photo.alt} loading={eager ? 'eager' : 'lazy'} />
+  const ref = useRef<HTMLElement>(null)
+  const reduced = useReducedMotion()
+  // parallax lento: a foto sobe enquanto a pagina desce e volta ao
+  // centro quando a secao sai; o scale 1.12 cobre o curso de ±6%
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
+  const y = useTransform(scrollYProgress, [0, 1], ['-6%', '6%'])
+  return <figure ref={ref} className={`internal-photo ${className}`}>
+    <span className="internal-photo__frame">
+      <motion.img src={photo.src} srcSet={photoSrcSet(photo.src)} sizes="(max-width: 1023px) 100vw, 70vw" alt={photo.alt} loading={eager ? 'eager' : 'lazy'} decoding="async" style={{ scale: 1.12, y: reduced ? 0 : y }} />
+    </span>
     <figcaption>{photo.caption}</figcaption>
   </figure>
 }
@@ -46,6 +56,9 @@ function Company() {
 
 function Activity() {
   const content = INTERNAL.activity
+  // um painel aberto por vez, como o `name` fazia no <details>
+  const [open, setOpen] = useState(0)
+  const reduced = useReducedMotion()
   return <>
     <header className="internal-frame activity-cover">
       <PageLabel page="atuacao" />
@@ -53,13 +66,25 @@ function Activity() {
       <p>{content.intro}</p>
     </header>
     <section className="internal-frame activity-index" aria-label={content.label}>
-      {content.items.map((item, index) => <details key={item.title} name="atuacao" open={index === 0} className="activity-entry">
-        <summary><h2>{item.title}</h2><span className="activity-entry__tag">{item.tag}</span><span className="activity-entry__toggle" aria-hidden="true" /></summary>
-        <div className="activity-entry__body">
-          <img src={item.image} alt={item.alt} loading={index === 0 ? 'eager' : 'lazy'} />
-          <div><p className="activity-entry__lead">{item.text}</p><p>{item.detail}</p><a className="internal-link" href={item.href}>{item.link}<span aria-hidden="true">↗</span></a></div>
+      {content.items.map((item, index) => {
+        const isOpen = open === index
+        return <div key={item.title} className={isOpen ? 'activity-entry is-open' : 'activity-entry'}>
+          <h2 className="activity-entry__heading">
+            <button type="button" id={`activity-heading-${index}`} aria-expanded={isOpen} aria-controls={`activity-panel-${index}`} onClick={() => setOpen(isOpen ? -1 : index)}>
+              <span>{item.title}</span>
+              <span className="activity-entry__tag">{item.tag}</span>
+              <span className="activity-entry__toggle" aria-hidden="true" />
+            </button>
+          </h2>
+          {/* o painel desliza na vertical enquanto a foto abre da esquerda */}
+          <motion.div id={`activity-panel-${index}`} className="activity-entry__body" role="region" aria-labelledby={`activity-heading-${index}`} inert={!isOpen} initial={false} animate={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }} transition={{ height: { duration: reduced ? 0 : 0.7, ease: [0.22, 1, 0.36, 1] }, opacity: { duration: reduced ? 0 : 0.45 } }}>
+            <div className="activity-entry__grid">
+              <motion.img src={item.image} srcSet={photoSrcSet(item.image)} sizes="(max-width: 1023px) 100vw, 50vw" alt={item.alt} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" initial={false} animate={{ clipPath: isOpen ? 'inset(0 0% 0 0)' : 'inset(0 100% 0 0)' }} transition={{ duration: reduced ? 0 : 0.85, ease: [0.22, 1, 0.36, 1] }} />
+              <div><p className="activity-entry__lead">{item.text}</p><p>{item.detail}</p><a className="internal-link" href={item.href}>{item.link}<span aria-hidden="true">↗</span></a></div>
+            </div>
+          </motion.div>
         </div>
-      </details>)}
+      })}
     </section>
   </>
 }
@@ -75,8 +100,10 @@ function Destination() {
       </div>
     </header>
     <section className="internal-frame destination-story" aria-labelledby="destination-story-title">
-      <div className="destination-story__copy"><p className="internal-eyebrow">{content.label}</p><h2 id="destination-story-title">{content.statement}</h2>{content.paragraphs.map(text => <p key={text}>{text}</p>)}<a className="internal-link" href={content.mapHref} target="_blank" rel="noreferrer">{content.mapLabel}<span aria-hidden="true">↗</span></a><p className="internal-note">{content.note}</p></div>
-      <Photograph photo={content.detailPhoto} />
+      <div className="destination-story__spread">
+        <Photograph photo={content.detailPhoto} />
+        <div><h2 id="destination-story-title">{content.statement}</h2>{content.paragraphs.map(text => <p key={text}>{text}</p>)}<a className="internal-link" href={content.mapHref} target="_blank" rel="noreferrer">{content.mapLabel}<span aria-hidden="true">↗</span></a><p className="internal-note">{content.note}</p></div>
+      </div>
     </section>
   </>
 }
@@ -129,11 +156,9 @@ export function InternalContent({ page }: { page: CorporatePage }) {
   </div>
 }
 
-export function InternalFooter({ page }: { page: CorporatePage }) {
-  const next = INTERNAL.footer.next[page]
+export function InternalFooter() {
   return <footer className="internal-footer" style={layout}>
     <div className="internal-frame">
-      <a className="internal-next" href={next.href}><span className="internal-eyebrow">{INTERNAL.footer.nextLabel}</span><span>{next.label}</span><span aria-hidden="true">↗</span></a>
       <div className="internal-footer__body"><div><a href="/" aria-label="Urban Stay — início"><img src="/img/logo.svg" alt="Urban Stay" /></a><p>{INTERNAL.footer.signature}</p></div><nav aria-label={INTERNAL.footer.linksLabel}>{NAV_LINKS.map(link => <a href={link.href} key={link.href}>{link.label}</a>)}</nav></div>
       <div className="internal-footer__bottom"><span>© {new Date().getFullYear()} Urban Stay®</span><nav aria-label={INTERNAL.footer.legalLabel}>{LEGAL_LINKS.map(link => <a href={link.href} key={link.href}>{link.label}</a>)}</nav></div>
     </div>

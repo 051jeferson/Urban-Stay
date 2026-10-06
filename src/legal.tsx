@@ -1,9 +1,15 @@
 import { createRoot } from 'react-dom/client'
-import { LEGAL_LINKS } from './design'
+import { CORPORATE_LAYOUT } from './design'
 import { LEGAL_PAGES } from './legalContent'
 import { useDesignScale } from './hooks/useDesignScale'
+import { Footer } from './components/Institutional'
 import './styles.css'
+import './corporate.css'
 import './legal.css'
+
+for (const [name, value] of Object.entries(CORPORATE_LAYOUT)) {
+  document.documentElement.style.setProperty(`--corporate-${name}`, `${value}px`)
+}
 
 function LegalPage() {
   useDesignScale()
@@ -18,7 +24,7 @@ function LegalPage() {
       {page.sections.map(section => <section key={section.title}><h2>{section.title}</h2>{section.paragraphs.map(text => <p key={text}>{text}</p>)}</section>)}
       <p className="legal-source">Referência: <a href="https://www.gov.br/anpd/pt-br/assuntos/titular-de-dados" target="_blank" rel="noreferrer">Autoridade Nacional de Proteção de Dados</a>.</p>
     </main>
-    <footer className="legal-footer"><span>© {new Date().getFullYear()} Urban Stay®</span><nav aria-label="Informações legais">{LEGAL_LINKS.map(link => <a key={link.href} href={link.href} aria-current={link.href === page.href ? 'page' : undefined}>{link.label}</a>)}</nav></footer>
+    <Footer />
   </>
 }
 

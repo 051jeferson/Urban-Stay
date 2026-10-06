@@ -184,7 +184,7 @@ a {
   letter-spacing: calc(0.14px * var(--k));
   white-space: nowrap;
   transition: transform 0.4s var(--ease-out), background-color 0.4s var(--ease-out),
-    color 0.4s var(--ease-out);
+    color 0.4s var(--ease-out), opacity 0.4s var(--ease-out);
 }
 
 .btn--solid {
@@ -198,22 +198,19 @@ a {
   transform: translateY(calc(-2px * var(--k)));
 }
 
-.btn--ghost {
-  color: var(--noite-urbana);
-}
-
-.btn--ghost:hover {
-  background: rgba(2, 6, 8, 0.06);
-}
-
 /* ------------------------------------------------------------------
    Palco fixo: roda de imagens + headline
    ------------------------------------------------------------------ */
 .stage-track {
+  height: 620svh;
   position: relative;
   /* fica acima da secao seguinte: a linha de fotos transborda o palco
      e precisa continuar visivel quando o sticky e liberado */
   z-index: 2;
+}
+
+@media (min-width: 1024px) {
+  .stage-track { height: 820svh; }
 }
 
 .stage {
@@ -291,6 +288,12 @@ a {
 .hero__actions {
   display: flex;
   gap: calc(8px * var(--k));
+}
+
+/* o link da hero usa o mesmo desenho do .internal-link das internas
+   (filete sob o conjunto, seta junto); so ajusta o corpo tipografico */
+.hero__actions .internal-link {
+  font-size: max(.95rem, calc(18px * var(--k)));
 }
 
 /* ------------------------------------------------------------------
@@ -691,15 +694,51 @@ a {
 }
 
 /* ------------------------------------------------------------------
-   Mobile — o art-board de 1440 vira um recorte de 820
+   Mobile — o art-board de 1440 vira um recorte de 860
    ------------------------------------------------------------------ */
 @media (max-width: 1023px) {
+  /* Adaptação de 9068:838 / 9068:919: texto legível e toque confortável. */
+  .hero__lead {
+    font-size: max(16px, calc(18px * var(--k)));
+    max-width: min(28ch, 78vw);
+    margin-inline: auto;
+    text-wrap: balance;
+  }
+  .hero__lead-part { display: block; }
+  .hero__actions .internal-link {
+    min-height: 44px;
+    align-items: center;
+  }
+  .benefits {
+    top: var(--mobile-copy-top);
+    left: 24px;
+    width: calc(100% - 48px);
+  }
+  .benefit { gap: 18px; }
+  .benefits__title {
+    font-size: clamp(30px, 8vw, 48px);
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+  }
+  .benefits .reveal-word,
+  .benefits .reveal-line { clip-path: none; }
+
+  .benefits__title,
+  .benefits__lead { white-space: normal; }
+  .benefits__lead { font-size: 16px; line-height: 1.5; max-width: 32ch; }
+
   .nav__links {
     display: none;
   }
 
   .nav {
     max-width: calc(100vw - 24px);
+  }
+
+  /* logo 1.6x maior que a escala compacta: no celular ele e a unica marca visivel */
+  .nav__logo {
+    width: calc(202.251px * var(--k) * 1.6);
+    height: calc(20.221px * var(--k) * 1.6);
   }
 
   .outro {
@@ -891,13 +930,6 @@ a {
   background-image: url("/img/bg-gradient.png");
   background-size: 100% 100%;
   background-repeat: no-repeat;
-}
-
-.loader__label {
-  font-size: calc(12px * var(--k));
-  letter-spacing: calc(1.4px * var(--k));
-  text-transform: uppercase;
-  opacity: 0.45;
 }
 
 html.is-loading {

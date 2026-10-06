@@ -10,6 +10,9 @@
 .corporate-header figure img { width: 100%; height: 100%; object-fit: cover; }
 .corporate-intro, .corporate-next { display: grid; grid-template-columns: 3fr 2fr; gap: calc(var(--corporate-sectionGap) * var(--k)); align-items: end; }
 .corporate-intro h2, .corporate-next h2 { font-size: calc(var(--corporate-display) * var(--k)); }
+/* o link segue o desenho do .internal-link das internas; o corpo tipografico
+   e local porque --i-body so existe nas paginas internas */
+.corporate-next .internal-link { font-size: max(.95rem, calc(18px * var(--k))); }
 .corporate-intro > p, .corporate-next p { max-width: 36ch; font-size: max(1rem, calc(var(--corporate-intro) * var(--k))); line-height: 1.5; }
 .corporate-links { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: calc(var(--corporate-gap) * var(--k)); margin-top: calc(var(--corporate-display) * var(--k)); }
 .corporate-links > a { border-top: 1px solid currentColor; padding-block: calc(var(--corporate-gap) * var(--k)); display: flex; flex-direction: column; align-items: flex-start; }
@@ -41,13 +44,17 @@
 .corporate-summary pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; line-height: 1.5; }
 .footer-corporate { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: calc(var(--corporate-sectionGap) * var(--k)); padding-bottom: calc(var(--corporate-breadcrumbGap) * var(--k)); }
 .footer-corporate > p { margin-top: 0; font-size: max(1.1rem, calc(var(--corporate-footer) * var(--k))); max-width: 25ch; }
-.footer-corporate h2 { font-size: .8rem; font-weight: 400; text-transform: uppercase; letter-spacing: .1em; margin-top: 0; opacity: .65; }
 .footer-corporate nav { flex-direction: column; gap: 1em; font-size: 1rem; }
 .footer-corporate address { font-style: normal; line-height: 1.7; overflow-wrap: anywhere; }
 .nav__links a[aria-current="page"] { opacity: 1; text-decoration: underline; text-underline-offset: .4em; }
-.nav-menu-toggle { display: none; min-height: 2.75rem; }
-.mobile-menu { position: fixed; inset: 0; margin: 0; width: 100%; max-width: none; height: 100%; max-height: none; border: 0; padding: max(1.5rem, calc(var(--corporate-sectionGap) * var(--k))); background: var(--areia-clara); color: var(--noite-urbana); }
-.mobile-menu > button { display: block; margin-left: auto; padding: .75em 0 .75em 1em; }
+/* o padding 0 alinha o texto do toggle na margem de 32*k — o Fechar do
+   menu repete a mesma caixa para trocar de lugar sem pular um pixel */
+.nav-menu-toggle { display: none; min-height: 2.75rem; padding: 0; }
+/* o dialog cobre a pagina e usa as margens da pagina: 32 do topo e dos lados */
+.mobile-menu { position: fixed; inset: 0; margin: 0; width: 100%; max-width: none; height: 100%; max-height: none; border: 0; padding: calc(32px * var(--k)); background: var(--areia-clara); color: var(--noite-urbana); }
+/* mesma caixa do .nav-menu-toggle: mesma fonte, mesma altura, colado no
+   canto — o Fechar ocupa exatamente o lugar do Menu */
+.mobile-menu > button { position: absolute; top: calc(32px * var(--k)); right: calc(32px * var(--k)); min-height: 2.75rem; padding: 0; font-size: 1rem; }
 .mobile-menu nav { display: flex; flex-direction: column; gap: 1em; margin-top: 3rem; }
 .mobile-menu nav a { font-size: 2rem; }
 @media (max-width: 1023px) {
@@ -60,7 +67,8 @@
   .corporate-contact form { grid-template-columns: 1fr; gap: 1.5rem; }
   .corporate-services article { grid-template-columns: 1fr 8fr; }
   .corporate-services article > div { grid-column: 2; }
-  .footer-corporate { grid-template-columns: 1fr 1fr; }
+  .footer-corporate { grid-template-columns: 1fr; gap: 32px; }
+  .footer-corporate nav { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; }
   .footer-corporate > p { grid-column: 1 / -1; }
   .corporate-contact { gap: 3rem; }
 }

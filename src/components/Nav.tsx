@@ -31,7 +31,7 @@ export function Nav() {
           initial="hidden"
           animate="show"
         >
-          {NAV_LINKS.map((link) => (
+          {[{ label: CORPORATE.home, href: '/' }, ...NAV_LINKS].map((link) => (
             // o wrapper carrega a entrada; a opacidade 0.8 e o hover
             // continuam com o CSS do proprio link
             <motion.span key={link.href} className="nav__link" variants={navItem}>
@@ -39,10 +39,10 @@ export function Nav() {
             </motion.span>
           ))}
         </motion.div>
-        <button className="nav-menu-toggle" ref={toggle} type="button" aria-haspopup="dialog" aria-controls="mobile-menu" onClick={() => menu.current?.showModal()}>{CORPORATE.menu} +</button>
+        <button className="nav-menu-toggle" ref={toggle} type="button" aria-haspopup="dialog" aria-controls="mobile-menu" onClick={() => menu.current?.showModal()}>{CORPORATE.menu}</button>
       </nav>
       <dialog id="mobile-menu" className="mobile-menu" ref={menu} aria-label="Navegação principal" onClose={() => toggle.current?.focus()}>
-        <button type="button" onClick={() => menu.current?.close()}>{CORPORATE.close} ×</button>
+        <button type="button" onClick={() => menu.current?.close()}>{CORPORATE.close}</button>
         <nav aria-label="Menu móvel"><a href="/">{CORPORATE.home}</a>{NAV_LINKS.map(link => <a key={link.href} href={link.href} aria-current={window.location.pathname === link.href ? 'page' : undefined}>{link.label}</a>)}</nav>
       </dialog>
     </>
